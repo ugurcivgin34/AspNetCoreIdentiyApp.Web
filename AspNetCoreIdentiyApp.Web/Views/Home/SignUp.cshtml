@@ -1,0 +1,80 @@
+﻿@model SignUpViewModel
+@{
+    ViewData["Title"] = "SignUp";
+}
+
+@*offset-md-3 kullanamızın sebebi soldan 3 boşluk sonra 6 ı dolu sonra 3 ü boş sağdan 3 soldan 3 boş yani*@
+
+<div class="row">
+    <div class="col-md-6 offset-3">
+        <h2>Kullanıcı Kayıt Formu</h2>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-info" role="alert">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+       @* All=>Herhangi bir textboxı etkilemeyen hatalar  hem de textbox daki hatalar gözükür
+        ModelOnly=>Herhangi bir textboxı ilgilendirmeyen ama hatanaında key kısmı boş olan yerlerin burda gözükmesini istiyorsak bunu kullanırız
+        buradaki asp-validation-summary modelin kendisi ile ilgili hatalar demek,,asp-validation-for daki hatalar ise ilgili property deki hatalar demektir.*@
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+        <form asp-controller="Home" asp-action="SignUp" method="post">
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label" asp-for="UserName"> </label>
+                <div class="col-md-8">
+                    @* asp-for ile beraber artık id kullanmaya gerek yok böyle hem tipini,hem id ,hem de name i ni belirlemiş olacak*@
+                    <input asp-for="UserName" class="form-control">
+                    @*    ViewModel de yazılan validasyonların ön yüzde gözükmesi yani burada gözükmesi için burayı ekledik*@
+                    <span class="text-danger" asp-validation-for="UserName"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label" asp-for="Email"> </label>
+                <div class="col-md-8">
+                    <input asp-for="Email" class="form-control">
+                    <span class="text-danger" asp-validation-for="Email"></span>
+
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label" asp-for="Phone"> </label>
+                <div class="col-md-8">
+                    <input asp-for="Phone" class="form-control">
+                    <span class="text-danger" asp-validation-for="Phone"></span>
+
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label" asp-for="Password"> </label>
+                <div class="col-md-8">
+                    <input asp-for="Password" class="form-control">
+                    <span class="text-danger" asp-validation-for="Password"></span>
+
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label" asp-for="PasswordConfirm"> </label>
+                <div class="col-md-8">
+                    <input asp-for="PasswordConfirm" class="form-control">
+                    <span class="text-danger" asp-validation-for="PasswordConfirm"></span>
+
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-8 offset-4">
+                    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
