@@ -1,6 +1,6 @@
 using AspNetCoreIdentiyApp.Web.Models;
-using AspNetCoreIdentiyApp.Web.Models.Entity;
 using Microsoft.EntityFrameworkCore;
+using AspNetCoreIdentiyApp.Web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 //Identiy Kütüphanesi Ýçin Ekledik...
-builder.Services.AddIdentity<AppUser,AppRole>().AddEntityFrameworkStores<AppDbContext>();
+builder.Services.AddIdentityWithExt();
 
 
 var app = builder.Build();
@@ -31,7 +31,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-//Area ekleyince burayý da eklemek gerekiyor,zate oluþturunca otomatik kendisi bu yapýyý ekle þeklinde sayfa gösteriyor.Biz bunu yeniversiyon göre uyarladý.
+//Area ekleyince burayý da eklemek gerekiyor,zate oluþturunca otomatik kendisi bu yapýyý ekle þeklinde sayfa gösteriyor.Biz bunu yeniversiyon göre uyarladý...
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
