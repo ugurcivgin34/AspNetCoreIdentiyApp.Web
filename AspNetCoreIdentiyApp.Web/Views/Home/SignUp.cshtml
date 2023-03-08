@@ -3,6 +3,17 @@
     ViewData["Title"] = "SignUp";
 }
 
+@*Client tarafında validasyon yapmış olduk.Böylece her istek de backende gelmeyecek.Bunu bu şekilde yapmamızın sebebi layout da jquery kodlarından sonra bunun eklenmesi lazım.Bu yüzden burda yaptık kodun sonuna eklemedik..net mvc projesi otomatk olarak sharedin altında _ValidationScriptsPartial şeklinde partial oluşturup getiriyo.Sadece bunu burda tanımlayıp işlemi tamamladık
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+BU şekilde partial içinde iki tane scripts dosyası var,ilki jqueryinin validasyonu için ikincis ise .netin validasyonu ile jquery arasında haberleşmesini sağlar.Buda viewmodel de yazdığımız validasyonların okunmasını sağlar.BU şekilde butona basmandan direk jquery şeklinde anlık sayfa yenienmeden kuralları uygulatmış olduk
+
+*@
+@section Scripts 
+{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
 @*offset-md-3 kullanamızın sebebi soldan 3 boşluk sonra 6 ı dolu sonra 3 ü boş sağdan 3 soldan 3 boş yani*@
 
 <div class="row">
@@ -15,7 +26,7 @@
             </div>
         }
 
-       @* All=>Herhangi bir textboxı etkilemeyen hatalar  hem de textbox daki hatalar gözükür
+        @* All=>Herhangi bir textboxı etkilemeyen hatalar  hem de textbox daki hatalar gözükür
         ModelOnly=>Herhangi bir textboxı ilgilendirmeyen ama hatanaında key kısmı boş olan yerlerin burda gözükmesini istiyorsak bunu kullanırız
         buradaki asp-validation-summary modelin kendisi ile ilgili hatalar demek,,asp-validation-for daki hatalar ise ilgili property deki hatalar demektir.*@
         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
