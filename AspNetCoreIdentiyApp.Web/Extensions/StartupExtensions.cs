@@ -1,6 +1,7 @@
 ﻿using AspNetCoreIdentiyApp.Web.Models.Entity;
 using AspNetCoreIdentiyApp.Web.Models;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using AspNetCoreIdentiyApp.Web.CustomValidations;
 
 namespace AspNetCoreIdentiyApp.Web.Extensions
 {
@@ -20,7 +21,8 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                 options.Password.RequireUppercase = false; //Büyük karakter zorunlu değil
                 options.Password.RequireDigit = false; //Sayısal karakter de zorunlu değil
 
-            }).AddEntityFrameworkStores<AppDbContext>();
+            }).AddPasswordValidator<PasswordValidator>().AddEntityFrameworkStores<AppDbContext>();
+              //Passwordvalidatoru da buraya ekledik
         }
     }
 }
