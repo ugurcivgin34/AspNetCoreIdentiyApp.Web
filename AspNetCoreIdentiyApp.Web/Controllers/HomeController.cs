@@ -99,6 +99,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
 
             // Kullanıcı varsa, verilen şifreyi kullanarak oturum açılır.En sondaki true ise kitleme içindir.
             // _signInManager, oturum açma işlemlerini yönetir.
+            //Remember true olunca kullanıcının tarayıcısında uzun ömürlü bir kimlik bilgisi (cookie) oluşturarak kullanıcının oturum açtığını hatırlayacaktır. Bu sayede, kullanıcı bir sonraki ziyaretinde tekrar oturum açmak zorunda kalmayacak ve oturum bilgileri tarayıcı tarafından hatırlanacaktır.
             var signUnResult = await _signInManager.PasswordSignInAsync(hasUser, model.Password, model.RememberMe, true);
 
             // Eğer oturum açma başarılı olduysa, kullanıcı yönlendirilir.
