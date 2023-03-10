@@ -2,6 +2,7 @@
 using AspNetCoreIdentiyApp.Web.Models;
 using AspNetCoreIdentiyApp.Web.CustomValidations;
 using AspNetCoreIdentiyApp.Web.Localizations;
+using Microsoft.AspNetCore.Identity;
 
 namespace AspNetCoreIdentiyApp.Web.Extensions
 {
@@ -9,6 +10,13 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
     {
         public static void AddIdentityWithExt(this IServiceCollection services)
         {
+
+            services.Configure<DataProtectionTokenProviderOptions>(opt =>
+            {
+                opt.TokenLifespan = TimeSpan.FromHours(2); //Üretilen tokenin süresi
+            });
+
+
             //Identiy Kütüphanesi İçin Ekledik...
             services.AddIdentity<AppUser, AppRole>(options =>
             {
@@ -27,6 +35,7 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
             }).AddPasswordValidator<PasswordValidator>()
             .AddUserValidator<UserValidator>() //Passwordvalidatoru da buraya ekledik
             .AddErrorDescriber<LocalizationIdentityErrorDescriber>()  //İdendityError hatalarını elle ezerek türkçe yaptık.Bunun extensinu tanımladık
+            .AddDefaultTokenProviders() //İdentity Serverin kendi tokenini üretmek için bunu kullandık
             .AddEntityFrameworkStores<AppDbContext>();
 
             services.ConfigureApplicationCookie(opt =>
@@ -46,6 +55,8 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                 // SlidingExpiration özelliği, kullanıcı herhangi bir işlem yapmadan oturum süresinin dolmasını önlemek için kullanılır.
                 opt.SlidingExpiration = true;
             });
+
+         
         }
     }
 }
