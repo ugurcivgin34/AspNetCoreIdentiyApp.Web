@@ -22,6 +22,9 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                 options.Password.RequireUppercase = false; //Büyük karakter zorunlu değil
                 options.Password.RequireDigit = false; //Sayısal karakter de zorunlu değil
 
+
+                options.Lockout.DefaultLockoutTimeSpan=TimeSpan.FromMinutes(3);//Default 3 dk kitlenmesini sağlıyoruz
+                options.Lockout.MaxFailedAccessAttempts = 3;//Kaç hatalı girişte kitlensin
             
             }).AddPasswordValidator<PasswordValidator>()
             .AddUserValidator<UserValidator>() //Passwordvalidatoru da buraya ekledik

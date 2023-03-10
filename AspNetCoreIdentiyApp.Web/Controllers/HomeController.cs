@@ -82,26 +82,42 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInViewModel model, string returnUrl = null)
         {
-
+            // returnUrl, kullanıcının başarılı giriş yaptıktan sonra yönlendirileceği sayfayı belirtir.
+            // Eğer returnUrl değeri null ise varsayılan olarak ana sayfaya yönlendirilir.
             returnUrl = returnUrl ?? Url.Action("Index", "Home");
 
+            // Verilen email adresine sahip kullanıcı var mı diye kontrol edilir.
+            // _userManager bir kullanıcı yönetimi nesnesidir ve FindByEmailAsync metodu ile kullanıcıları email adresleri ile arar.
             var hasUser = await _userManager.FindByEmailAsync(model.Email);
 
+            // Eğer böyle bir kullanıcı yoksa, ModelState üzerine bir hata eklenir ve aynı sayfa tekrar gösterilir.
             if (hasUser == null)
             {
                 ModelState.AddModelError(string.Empty, "Email veya şifre yanlış");
                 return View();
             }
 
-            var signUnResult = await _signInManager.PasswordSignInAsync(hasUser, model.Password, model.RememberMe, false);
+            // Kullanıcı varsa, verilen şifreyi kullanarak oturum açılır.En sondaki true ise kitleme içindir.
+            // _signInManager, oturum açma işlemlerini yönetir.
+            var signUnResult = await _signInManager.PasswordSignInAsync(hasUser, model.Password, model.RememberMe, true);
 
-            if (signUnResult.Succeeded) //BAşarılı ise cookie oluşturur
+            // Eğer oturum açma başarılı olduysa, kullanıcı yönlendirilir.
+            // returnUrl, SignIn metoduna verilen returnUrl değeriyle aynı sayfaya yönlendirilir.
+            if (signUnResult.Succeeded)
             {
                 return Redirect(returnUrl);
             }
 
-            ModelState.AddModelErrorList(new List<string>() { "Email veya şifre yanlış" });
 
+            if (signUnResult.IsLockedOut)
+            {
+                ModelState.AddModelErrorList(new List<string>() { "3 dakika boyunca giriş yapamazsınız." });
+                return View(model);
+
+            }
+
+            // Eğer oturum açma başarısız olduysa, ModelState üzerine bir hata eklenir ve aynı sayfa tekrar gösterilir.
+            ModelState.AddModelErrorList(new List<string>() { "Email veya şifre yanlış",$"Başarısız giriş sayısı={await _userManager.GetAccessFailedCountAsync(hasUser)}" });
             return View(model);
         }
 
