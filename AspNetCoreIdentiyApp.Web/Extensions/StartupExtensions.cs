@@ -38,7 +38,9 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                 // CookieBuilder'ın Name özelliği ile çerez adı belirlenir.
                 cookieBuilder.Name = "UdemyAppCookie";
                 //kullanıcının yetkisiz olarak erişmeye çalıştığı bir sayfaya erişmek istediğinde yönlendirileceği giriş sayfasının yolunu belirtir.
-                opt.LoginPath = new PathString("/ Home/SigIn");
+                opt.LoginPath = new PathString("/Home/SigIn");
+                //bu kod parçası "/Member/logout" URL'sinin, kullanıcının oturumunu sonlandırmak için kullanılacağını belirtir.bir kullanıcının oturumunu sonlandırmak için kullanılan URL'nin yolunu belirtir. 
+                opt.LogoutPath = new PathString("/Member/logout");
                 // ConfigureApplicationCookie metodu, cookie ayarlarını yapılandırmak için kullanılır.
                 opt.Cookie = cookieBuilder;
                 // ExpireTimeSpan özelliği, çerezin ne kadar süreyle geçerli olduğunu belirler.
