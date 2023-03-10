@@ -28,7 +28,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 //Area ekleyince burayý da eklemek gerekiyor,zate oluþturunca otomatik kendisi bu yapýyý ekle þeklinde sayfa gösteriyor.Biz bunu yeniversiyon göre uyarladý...
