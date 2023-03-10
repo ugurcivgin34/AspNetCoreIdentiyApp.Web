@@ -1,6 +1,5 @@
 ﻿using AspNetCoreIdentiyApp.Web.Models.Entity;
 using AspNetCoreIdentiyApp.Web.Models;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using AspNetCoreIdentiyApp.Web.CustomValidations;
 using AspNetCoreIdentiyApp.Web.Localizations;
 
@@ -22,10 +21,9 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                 options.Password.RequireUppercase = false; //Büyük karakter zorunlu değil
                 options.Password.RequireDigit = false; //Sayısal karakter de zorunlu değil
 
-
                 options.Lockout.DefaultLockoutTimeSpan=TimeSpan.FromMinutes(3);//Default 3 dk kitlenmesini sağlıyoruz
                 options.Lockout.MaxFailedAccessAttempts = 3;//Kaç hatalı girişte kitlensin
-            
+
             }).AddPasswordValidator<PasswordValidator>()
             .AddUserValidator<UserValidator>() //Passwordvalidatoru da buraya ekledik
             .AddErrorDescriber<LocalizationIdentityErrorDescriber>()  //İdendityError hatalarını elle ezerek türkçe yaptık.Bunun extensinu tanımladık
@@ -48,9 +46,6 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                 // SlidingExpiration özelliği, kullanıcı herhangi bir işlem yapmadan oturum süresinin dolmasını önlemek için kullanılır.
                 opt.SlidingExpiration = true;
             });
-
         }
-
-
     }
 }

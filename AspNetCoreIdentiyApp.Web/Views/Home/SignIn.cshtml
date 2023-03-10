@@ -3,7 +3,10 @@
     ViewData["Title"] = "SignIn";
 }
 
-
+@section Scripts
+    {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
 <div class="row">
     <div class="col-md-4 offset-md-4">
         <h2>Kullanıcı Giriş</h2>
@@ -19,11 +22,23 @@
                 <label for="Passwod" class="form-label" asp-for="Password"></label>
                 <input type="password" class="form-control" asp-for="Password" />
             </div>
-            <div class="mb-3">
-                <input type="checkbox" class="form-check-input" asp-for="RememberMe">
-                <label class="form-check-label" for="RememberMe" asp-for="RememberMe"></label>
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" asp-for="RememberMe">
+                        <label class="form-check-label" for="RememberMe" asp-for="RememberMe"></label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <a class="btn btn-outline-secondary btn-sm float-end" asp-controller="Home" asp-action="ResetPassword">Şifremi unuttum</a>
+                </div>
             </div>
+
             <button type="submit" class="btn btn-primary">Üye Giriş</button>
+            <div>
+            </div>
         </form>
     </div>
 </div>
