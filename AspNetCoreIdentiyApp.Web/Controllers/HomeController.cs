@@ -144,6 +144,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
 
             string passwordResetToken = await _userManager.GeneratePasswordResetTokenAsync(hasUser);
 
+            //ASP.NET Core uygulamalarında URL'lerin şemasını (HTTP veya HTTPS) almak için kullanılan bir özelliktir.
             var passwordResetLink = Url.Action("ResetPassword", "Home", new { userId = hasUser.Id, Token = passwordResetToken }, HttpContext.Request.Scheme);
             //örnek link https://localhost:7006?userId=12213&token=aajsdfjdsalkfjkdsfj
 
@@ -152,6 +153,49 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
             TempData["SuccessMessage"] = "Şifre yenileme linki, eposta adresenize gönderilmiştir";
 
             return RedirectToAction(nameof(ForgetPassword));
+        }
+
+
+        public IActionResult ResetPassword(string userId, string token)
+        {
+            //userId ve token query stringden geliyor ve .net otomatik olarak isim aynı olduğu için maplayip parametrelere değerleri atıyor.
+            //Aşağıdaki Tempdataları kullanmamızın sebebi bu sayafaya geldği zaman bunları alıp post metodda kullanmak istiyoruz.Bu yüzden Tempdata ları kullandık
+            TempData["userId"] = userId;
+            TempData["token"] = token;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel request)
+        {
+            var userId = TempData["userId"];
+            var token = TempData["token"];
+
+            if (userId == null || token == null)
+            {
+                throw new Exception("Bir hata meydana geldi");
+            }
+
+            var hasUser = await _userManager.FindByIdAsync(userId.ToString()!);
+
+            if (hasUser == null)
+            {
+                ModelState.AddModelError(String.Empty, "Kullanıcı bulunamamıştır.");
+                return View();
+            }
+
+            IdentityResult result = await _userManager.ResetPasswordAsync(hasUser, token.ToString()!, request.Password);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Şifreniz başarıyla yenilenmiştir";
+            }
+            else
+            {
+                ModelState.AddModelErrorList(result.Errors.Select(x => x.Description).ToList());
+            }
+
+            return View();
         }
 
 
