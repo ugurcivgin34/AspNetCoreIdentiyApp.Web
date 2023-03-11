@@ -5,7 +5,10 @@ using AspNetCoreIdentiyApp.Web.Services;
 using AspNetCoreIdentiyApp.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
+using System;
 using System.Diagnostics;
+using static System.Net.WebRequestMethods;
 
 namespace AspNetCoreIdentiyApp.Web.Controllers
 {
@@ -156,9 +159,11 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
         }
 
 
+        //Bu kod, "ResetPassword" adlı bir eylem yöntemi tanımlar. Bu eylem, iki dize parametresi alır: "userId" ve "token". Bu iki parametre, HTTP sorgu dizesinden gelen ve .NET'in otomatik olarak eşleştirdiği isimlerdir.
+
+        //TempData, verileri bir eylemden diğerine taşımak için kullanılan bir bellek alanıdır.Bu kod, "userId" ve "token" değerlerini TempData nesnesine kaydeder. Bu değerler, sonraki bir HTTP isteği tarafından erişilebilir hale gelir. Bu değerlerin post işleminde kullanılmak üzere kaydedildiği anlamına gelir.
         public IActionResult ResetPassword(string userId, string token)
         {
-            //userId ve token query stringden geliyor ve .net otomatik olarak isim aynı olduğu için maplayip parametrelere değerleri atıyor.
             //Aşağıdaki Tempdataları kullanmamızın sebebi bu sayafaya geldği zaman bunları alıp post metodda kullanmak istiyoruz.Bu yüzden Tempdata ları kullandık
             TempData["userId"] = userId;
             TempData["token"] = token;
