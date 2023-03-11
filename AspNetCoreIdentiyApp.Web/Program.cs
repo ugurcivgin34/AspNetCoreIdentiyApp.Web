@@ -1,6 +1,8 @@
 using AspNetCoreIdentiyApp.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using AspNetCoreIdentiyApp.Web.Extensions;
+using AspNetCoreIdentiyApp.Web.Models.OptionsEntity;
+using AspNetCoreIdentiyApp.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +14,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlCon"));
 });
 
+//Herhangibir classýn constructorýnda IOptions görürsen appsettings den EmailSettings datalarýný al
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 //Identiy Kütüphanesi Ýçin Ekledik...
 builder.Services.AddIdentityWithExt();
 
+
+
+//Request response yaþam döngüsü olduðu için response döndüðü anda bu emailservice memoryden gitsin,her request ile beraber oluþsun her defasýnda 
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

@@ -1,6 +1,7 @@
 ﻿using AspNetCoreIdentiyApp.Web.Extensions;
 using AspNetCoreIdentiyApp.Web.Models;
 using AspNetCoreIdentiyApp.Web.Models.Entity;
+using AspNetCoreIdentiyApp.Web.Services;
 using AspNetCoreIdentiyApp.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        
 
         //Kullanııcı ile ilgili işlemleri yapmak istediğimizde kullanacağımız sınıftır.
         private readonly UserManager<AppUser> _userManager;
@@ -18,11 +20,13 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
         //Kullanıcının giriş yapması,çıkış yapmsı, third part yazılımların kullanılması giri işlevleri bu sınıf sağlar .Kullanıcının cookie oluşturması işlemlerini bu sınıf gerçekleştirir
         private readonly SignInManager<AppUser> _signInManager;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        private readonly IEmailService _emailService;
+        public HomeController(ILogger<HomeController> logger, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IEmailService emailService)
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
         }
 
         public IActionResult Index()
@@ -140,7 +144,10 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
 
             string passwordResetToken = await _userManager.GeneratePasswordResetTokenAsync(hasUser);
 
-            var passwordResetLink = Url.Action("ResetPassword", "Home", new {userId=hasUser.Id,Token=passwordResetToken});
+            var passwordResetLink = Url.Action("ResetPassword", "Home", new { userId = hasUser.Id, Token = passwordResetToken }, HttpContext.Request.Scheme);
+            //örnek link https://localhost:7006?userId=12213&token=aajsdfjdsalkfjkdsfj
+
+            await _emailService.SendResetPasswordEmail(passwordResetLink,hasUser.Email);
 
             TempData["SuccessMessage"] = "Şifre yenileme linki, eposta adresenize gönderilmiştir";
 
