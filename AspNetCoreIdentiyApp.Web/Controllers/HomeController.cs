@@ -49,8 +49,6 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> SignUp(SignUpViewModel request)
         {
-
-
             if (!ModelState.IsValid)
             {
                 return View();
@@ -89,6 +87,12 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInViewModel model, string returnUrl = null)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
             // returnUrl, kullanıcının başarılı giriş yaptıktan sonra yönlendirileceği sayfayı belirtir.
             // Eğer returnUrl değeri null ise varsayılan olarak ana sayfaya yönlendirilir.
             returnUrl = returnUrl ?? Url.Action("Index", "Home");
