@@ -6,8 +6,10 @@ namespace AspNetCoreIdentiyApp.Web.TagHelpers
     {
         public string? PictureUrl { get; set; }
 
+        //Process() yöntemi, TagHelper sınıfından türetilir ve görüntü etiketi oluşturmak için kullanılır.
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            //output değişkeni, TagHelperOutput tipinde bir değişkendir ve img etiketi oluşturulacağını belirtir.
             output.TagName = "img";
 
             if (string.IsNullOrEmpty(PictureUrl))

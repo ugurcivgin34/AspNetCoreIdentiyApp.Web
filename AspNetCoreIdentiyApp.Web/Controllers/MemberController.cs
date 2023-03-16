@@ -120,19 +120,19 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
             currentUser.City = request.City;
             currentUser.Gender = request.Gender;
 
-            if (request.Picture != null && request.Picture.Length > 0)
+            if (request.Picture != null && request.Picture.Length > 0) // Eğer resim dosyası varsa ve boyutu sıfırdan büyükse
             {
-                var wwwrootFolder = _fileProvider.GetDirectoryContents("wwwroot");
+                var wwwrootFolder = _fileProvider.GetDirectoryContents("wwwroot"); // wwwroot klasörü için _fileProvider üzerinden dizin içeriğini al
 
-                string randomFileName = $"{Guid.NewGuid().ToString()}{Path.GetExtension(request.Picture.FileName)}";
+                string randomFileName = $"{Guid.NewGuid().ToString()}{Path.GetExtension(request.Picture.FileName)}"; // Rastgele bir dosya adı oluştur
 
-                var newPicturePath = Path.Combine(wwwrootFolder!.First(x => x.Name == "userpictures").PhysicalPath!, randomFileName);
+                var newPicturePath = Path.Combine(wwwrootFolder!.First(x => x.Name == "userpictures").PhysicalPath!, randomFileName); // Dosya yolu ve adını birleştir
 
-                using var stream = new FileStream(newPicturePath, FileMode.Create);
+                using var stream = new FileStream(newPicturePath, FileMode.Create); // Dosya akışı oluştur
 
-                await request.Picture.CopyToAsync(stream);
+                await request.Picture.CopyToAsync(stream); // Resim dosyasını dosya akışına kopyala ve kaydet
 
-                currentUser.Picture = randomFileName;
+                currentUser.Picture = randomFileName; // Kullanıcının profil resmi özelliğini kaydedilen dosyanın adı ile güncelle
             }
 
             var updateToUserResult = await _userManager.UpdateAsync(currentUser);
