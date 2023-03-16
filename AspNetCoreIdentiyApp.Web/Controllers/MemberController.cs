@@ -33,6 +33,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
                 Email = currentUser.Email,
                 UserName = currentUser.UserName,
                 PhoneNumber = currentUser.PhoneNumber,
+                PictureUrl=currentUser.Picture
             };
 
             return View(userViewModel);
@@ -85,7 +86,6 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
         {
             await _signInManager.SignOutAsync();
         }
-
         public async Task<IActionResult> UserEdit()
         {
             ViewBag.genderList = new SelectList(Enum.GetNames(typeof(Gender)));
@@ -103,7 +103,6 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
 
             return View(userEditViewModel);
         }
-
         [HttpPost]
         public async Task<IActionResult> UserEdit(UserEditViewModel request)
         {
