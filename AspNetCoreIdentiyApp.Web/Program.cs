@@ -5,6 +5,7 @@ using AspNetCoreIdentiyApp.Web.Models.OptionsEntity;
 using AspNetCoreIdentiyApp.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using System.Runtime.ConstrainedExecution;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,9 @@ builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 {
     options.ValidationInterval = TimeSpan.FromMinutes(30);
 });
+
+//Bu kod sayesinde projede herhangi bir sýnýffta IFilePRovider kullanýlýrsa dosya iþlemleri için referans olarak da wwwroot olacak kullanýr,eriþmiþ olur
+builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 
 //Request response yaþam döngüsü olduðu için response döndüðü anda bu emailservice memoryden gitsin,her request ile beraber oluþsun her defasýnda 
 builder.Services.AddScoped<IEmailService, EmailService>();
