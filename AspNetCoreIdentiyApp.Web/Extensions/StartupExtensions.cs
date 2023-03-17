@@ -42,16 +42,24 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
             {
                 // CookieBuilder sınıfı, ASP.NET Core uygulamasında kullanılan çerezlerin özelliklerini belirlemek için kullanılır.
                 var cookieBuilder = new CookieBuilder();
+
                 // CookieBuilder'ın Name özelliği ile çerez adı belirlenir.
                 cookieBuilder.Name = "UdemyAppCookie";
+
                 //kullanıcının yetkisiz olarak erişmeye çalıştığı bir sayfaya erişmek istediğinde yönlendirileceği giriş sayfasının yolunu belirtir.
                 opt.LoginPath = new PathString("/Home/SignIn");
+
                 //bu kod parçası "/Member/logout" URL'sinin, kullanıcının oturumunu sonlandırmak için kullanılacağını belirtir.bir kullanıcının oturumunu sonlandırmak için kullanılan URL'nin yolunu belirtir. 
                 opt.LogoutPath = new PathString("/Member/logout");
+
+                opt.AccessDeniedPath = new PathString("/Member/AccessDenied");
+
                 // ConfigureApplicationCookie metodu, cookie ayarlarını yapılandırmak için kullanılır.
                 opt.Cookie = cookieBuilder;
+
                 // ExpireTimeSpan özelliği, çerezin ne kadar süreyle geçerli olduğunu belirler.
                 opt.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+
                 // SlidingExpiration özelliği, kullanıcı herhangi bir işlem yapmadan oturum süresinin dolmasını önlemek için kullanılır.
                 opt.SlidingExpiration = true;
             });

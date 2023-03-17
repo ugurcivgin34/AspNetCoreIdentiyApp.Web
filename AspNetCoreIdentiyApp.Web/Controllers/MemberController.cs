@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.FileProviders;
+using NuGet.Protocol.Core.Types;
 using System.Security.Claims;
 
 namespace AspNetCoreIdentiyApp.Web.Controllers
@@ -14,7 +15,6 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
     [Authorize]
     public class MemberController : Controller
     {
-
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IFileProvider _fileProvider;
@@ -174,7 +174,13 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
             return View(userEditViewModel);
         }
 
-
+        public  IActionResult AccessDenied(string returnUrl)
+        {
+            string message = string.Empty;
+            message = "Bu sayfayı görmeye yetkiniz yoktur. Yetki almak için  yöneticiniz ile görüşebilirsiniz.";
+            ViewBag.message = message;
+            return View();
+        }
 
     }
 }

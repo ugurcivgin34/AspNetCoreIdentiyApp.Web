@@ -1,4 +1,5 @@
-﻿@*  IsAuthenticated ile kullanıcnın login olup olmadığını anlayabiliyoruz*@
+﻿@using System.Security.Claims;
+@*  IsAuthenticated ile kullanıcnın login olup olmadığını anlayabiliyoruz*@
 @if (User.Identity.IsAuthenticated)
 {
     <ul class="navbar-nav me-0">
@@ -7,10 +8,14 @@
                 @User.Identity.Name
             </a>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item"  asp-controller="Member" asp-action="Index">Profil</a></li>
+                <li><a class="dropdown-item" asp-controller="Member" asp-action="Index">Profil</a></li>
                 <li><a class="dropdown-item" asp-controller="Member" asp-action="PasswordChange">Şifre değiştir</a></li>
                 <li><a class="dropdown-item" asp-controller="Member" asp-action="UserEdit">Kullanıcı güncelle</a></li>
-                <li><a class="dropdown-item" asp-route-returnurl="/Home/Index"  asp-controller="Member" asp-action="logout">Çıkış Yap</a></li>
+                @if (User.HasClaim(x => x.Type==ClaimTypes.Role && x.Value == "admin"))
+                {
+                    <li><a class="dropdown-item" asp-area="admin" asp-controller="Home" asp-action="Index">Admin</a></li>
+                }
+                <li><a class="dropdown-item" asp-route-returnurl="/Home/Index" asp-controller="Member" asp-action="logout">Çıkış Yap</a></li>
             </ul>
         </li>
     </ul>

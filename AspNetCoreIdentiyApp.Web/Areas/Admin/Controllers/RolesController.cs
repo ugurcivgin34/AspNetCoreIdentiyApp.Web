@@ -9,38 +9,32 @@ using System.Data;
 
 namespace AspNetCoreIdentiyApp.Web.Areas.Admin.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="admin")] //Admin yetkisine sahip kişiler sadece bu sayfaya girebilecek , extra rolaction yetkisi var ise aşağıdaki metodlara yapabilecek
     [Area("Admin")]
     public class RolesController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRole> _roleManager;
-
         public RolesController(RoleManager<AppRole> roleManager, UserManager<AppUser> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
         }
-        //[Authorize(Roles = "role-action")]
         public async Task<IActionResult> Index()
         {
-
             var roles = await _roleManager.Roles.Select(x => new RoleViewModel()
             {
                 Id = x.Id,
                 Name = x.Name!
             }).ToListAsync();
-
             return View(roles);
         }
 
-        //[Authorize(Roles = "role-action")]
+        [Authorize(Roles ="role-action")]
         public IActionResult RoleCreate()
         {
             return View();
         }
-
-        //[Authorize(Roles = "role-action")]
         [HttpPost]
         public async Task<IActionResult> RoleCreate(RoleCreateViewModel request)
         {
@@ -54,7 +48,7 @@ namespace AspNetCoreIdentiyApp.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(RolesController.Index));
         }
 
-        //[Authorize(Roles = "role-action")]
+        [Authorize(Roles = "role-action")]
         public async Task<IActionResult> RoleUpdate(string id)
         {
             var roleToUpdate = await _roleManager.FindByIdAsync(id);
@@ -68,7 +62,7 @@ namespace AspNetCoreIdentiyApp.Web.Areas.Admin.Controllers
             return View(new RoleUpdateViewModel() { Id = roleToUpdate.Id, Name = roleToUpdate!.Name! });
         }
 
-        //[Authorize(Roles = "role-action")]
+        [Authorize(Roles = "role-action")]
         [HttpPost]
         public async Task<IActionResult> RoleUpdate(RoleUpdateViewModel request)
         {
@@ -89,8 +83,8 @@ namespace AspNetCoreIdentiyApp.Web.Areas.Admin.Controllers
 
             return View();
         }
-
-        //[Authorize(Roles = "role-action")]
+         
+        [Authorize(Roles = "role-action")]
         public async Task<IActionResult> RoleDelete(string id)
         {
             var roleToDelete = await _roleManager.FindByIdAsync(id);
@@ -169,11 +163,13 @@ namespace AspNetCoreIdentiyApp.Web.Areas.Admin.Controllers
 
 
         }
-
         public async Task<IActionResult> AssignRoleToUser(string id)
         {
+            //AssignRoleToUser metodu, birinci parametre olan "id" parametresiyle atama işlemi yapılacak kullanıcının ID'sini belirtir. Metod, UserManager.FindByIdAsync() yöntemiyle bu ID'ye sahip kullanıcıyı bulur.
             var currentUser = (await _userManager.FindByIdAsync(id))!;
-            ViewBag.userId = id; //Post kısmında bu id lazım, çünkü seçilen kullanıcının id lazım olacak,viewbag kullanarak view kısmında form içinde tanımladık.
+            ViewBag.userId = id; /*Sonrasında, ViewBag.userId özelliği atanır.Bu özellik, Post yöntemi tarafından kullanılacak olan kullanıcının ID'sini taşır.*/
+
+
             var roles = await _roleManager.Roles.ToListAsync();
             var userRoles = await _userManager.GetRolesAsync(currentUser);
             var roleViewModelList = new List<AssignRoleToUserViewModel>();
@@ -188,7 +184,6 @@ namespace AspNetCoreIdentiyApp.Web.Areas.Admin.Controllers
             }
             return View(roleViewModelList);
         }
-
         [HttpPost]
         public async Task<IActionResult> AssignRoleToUser(string userId, List<AssignRoleToUserViewModel> requestList)
         {

@@ -1,11 +1,13 @@
 ﻿using AspNetCoreIdentiyApp.Web.Areas.Admin.Models;
 using AspNetCoreIdentiyApp.Web.Models.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCoreIdentiyApp.Web.Areas.Admin.Controllers
 {
+    [Authorize(Roles="admin")]
     //Diğer controllerdeki yani ana controllerdeki Home sınıfı ile çakıştığı için bunun başına bu attribute belirttik.Area olduğunu söylemiş olduk
     [Area("Admin")]
     public class HomeController : Controller
