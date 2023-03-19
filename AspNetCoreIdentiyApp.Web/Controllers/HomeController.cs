@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Diagnostics;
+using System.Security.Claims;
 using static System.Net.WebRequestMethods;
 
 namespace AspNetCoreIdentiyApp.Web.Controllers
@@ -15,7 +16,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        
+
 
         //Kullanııcı ile ilgili işlemleri yapmak istediğimizde kullanacağımız sınıftır.
         private readonly UserManager<AppUser> _userManager;
@@ -56,21 +57,34 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
             //CreateAsync metodu user ile password ister,passwordu verdğimizde veritabanına hashlemiş şekilde kaydeder.
             var identityResult = await _userManager.CreateAsync(new() { UserName = request.UserName, PhoneNumber = request.Phone, Email = request.Email }, request.PasswordConfirm);
 
-            if (identityResult.Succeeded)
+            if (!identityResult.Succeeded)
             {
-                //TempData yapmamızın sebebi SignUp metodunun get metoduna gittiği zaman uyarı mesajını kaybetmemiz lazım.ViewBagyapınca bu mesajı kaybediyorduk.Bu yüzden kullandı.Aynı zamanda TempData kullnarak bir kere cookie set etmiş oluyoruz.
-                TempData["SuccessMessage"] = "Üyelik kayıt işlemi başarılıyla gerçeklemiştir.";
-                return RedirectToAction(nameof(HomeController.SignUp)); //veya ("SignUp") şeklinde de yazılabilir.Bu şekilde tip güveniliği sağlamış olduk
+                //foreach (IdentityError item in identityResult.Errors)
+                //{
+                //    ModelState.AddModelError(string.Empty, item.Description);
+                //}
+
+                ModelState.AddModelErrorList(identityResult.Errors.Select(x => x.Description).ToList());
+                return View();
+
             }
 
-            //foreach (IdentityError item in identityResult.Errors)
-            //{
-            //    ModelState.AddModelError(string.Empty, item.Description);
-            //}
+            //Bu kodların genel olarak yaptığı işlem, bir kullanıcıya "ExcahangeExpireDate" adlı bir hak talebi (claim) eklemektir. Bu hak talebi, kullanıcının değişim yapabileceği son tarihi belirtir ve şu anda eklenen hak talebi, mevcut tarihten 10 gün sonraya ayarlanmıştır.
+            var exchangeExpireClaim = new Claim("ExchangeExpireDate", DateTime.Now.AddDays(10).ToString());
 
-            ModelState.AddModelErrorList(identityResult.Errors.Select(x => x.Description).ToList());
+            var user = await _userManager.FindByNameAsync(request.UserName);
 
-            return View();
+            var claimResult = await _userManager.AddClaimAsync(user, exchangeExpireClaim);
+
+            if (!claimResult.Succeeded)
+            {
+                ModelState.AddModelErrorList(identityResult.Errors.Select(x => x.Description).ToList());
+                return View();
+            }
+
+            //TempData yapmamızın sebebi SignUp metodunun get metoduna gittiği zaman uyarı mesajını kaybetmemiz lazım.ViewBagyapınca bu mesajı kaybediyorduk.Bu yüzden kullandı.Aynı zamanda TempData kullnarak bir kere cookie set etmiş oluyoruz.
+            TempData["SuccessMessage"] = "Üyelik kayıt işlemi başarılıyla gerçeklemiştir.";
+            return RedirectToAction(nameof(HomeController.SignIn)); //veya ("SignUp") şeklinde de yazılabilir.Bu şekilde tip güveniliği sağlamış olduk
         }
 
         public IActionResult SignIn()
@@ -129,7 +143,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
             }
 
             // Eğer oturum açma başarısız olduysa, ModelState üzerine bir hata eklenir ve aynı sayfa tekrar gösterilir.
-            ModelState.AddModelErrorList(new List<string>() { "Email veya şifre yanlış",$"Başarısız giriş sayısı={await _userManager.GetAccessFailedCountAsync(hasUser)}" });
+            ModelState.AddModelErrorList(new List<string>() { "Email veya şifre yanlış", $"Başarısız giriş sayısı={await _userManager.GetAccessFailedCountAsync(hasUser)}" });
             return View(model);
         }
 
@@ -146,7 +160,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
             if (hasUser == null)
             {
                 ModelState.AddModelError(String.Empty, "Bu email adresine sahip kullanıcı bulunamamıştır.");
-                return View();  
+                return View();
             }
 
             string passwordResetToken = await _userManager.GeneratePasswordResetTokenAsync(hasUser);
@@ -155,7 +169,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
             var passwordResetLink = Url.Action("ResetPassword", "Home", new { userId = hasUser.Id, Token = passwordResetToken }, HttpContext.Request.Scheme);
             //örnek link https://localhost:7006?userId=12213&token=aajsdfjdsalkfjkdsfj
 
-            await _emailService.SendResetPasswordEmail(passwordResetLink,hasUser.Email);
+            await _emailService.SendResetPasswordEmail(passwordResetLink, hasUser.Email);
 
             TempData["SuccessMessage"] = "Şifre yenileme linki, eposta adresenize gönderilmiştir";
 

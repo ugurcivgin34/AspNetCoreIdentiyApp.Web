@@ -4,8 +4,11 @@ using AspNetCoreIdentiyApp.Web.Extensions;
 using AspNetCoreIdentiyApp.Web.Models.OptionsEntity;
 using AspNetCoreIdentiyApp.Web.Services;
 using Microsoft.AspNetCore.Identity;
-using System.Runtime.ConstrainedExecution;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Authentication;
+using AspNetCoreIdentiyApp.Web.ClaimProvider;
+using Microsoft.AspNetCore.Authorization;
+using AspNetCoreIdentiyApp.Web.Requirements;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +48,12 @@ builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.
 
 //Request response yaþam döngüsü olduðu için response döndüðü anda bu emailservice memoryden gitsin,her request ile beraber oluþsun her defasýnda 
 builder.Services.AddScoped<IEmailService, EmailService>();
+
+//Coorkiee de claime istediðimi özlliði eklemek için ekledik,Ezdik
+builder.Services.AddScoped<IClaimsTransformation, UserClaimProvider>();
+
+//Bir kullanýcýnýn deðiþim yapabileceði son tarihin geçip geçmediðini kontrol etmek için yetkilendirme gereksinimini temsil eder.Bunun enjekte ettik
+builder.Services.AddScoped<IAuthorizationHandler, ExchangeExpireRequirementHandler>();
 
 var app = builder.Build();
 

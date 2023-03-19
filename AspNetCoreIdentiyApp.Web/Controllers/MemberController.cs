@@ -18,6 +18,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IFileProvider _fileProvider;
+        //  private readonly IHttpContextAccessor _httpContextAccessor; //Direk login olan kullanıcı bilgilerine erişmek için HttpContext nesnesi azım,HttpContext.User ile erişilebiliyor,ya da bu şekilde de _httpContex.HttpContex şeklinde bunu controller da yapmaya gerek yok , çünkü controllerın içinde direk User nesnesi geliyor fakat controller dışında yapmak istersek olmaz bu şekilde yapmak gerekiyor.IHttpContext i yaparsak programcs de injenction yapmak gerekir
         public MemberController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, IFileProvider fileProvider)
         {
             _signInManager = signInManager;
@@ -33,7 +34,7 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
                 Email = currentUser.Email,
                 UserName = currentUser.UserName,
                 PhoneNumber = currentUser.PhoneNumber,
-                PictureUrl=currentUser.Picture
+                PictureUrl = currentUser.Picture
             };
 
             return View(userViewModel);
@@ -173,12 +174,35 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
 
             return View(userEditViewModel);
         }
-
-        public  IActionResult AccessDenied(string returnUrl)
+        public IActionResult AccessDenied(string returnUrl)
         {
             string message = string.Empty;
             message = "Bu sayfayı görmeye yetkiniz yoktur. Yetki almak için  yöneticiniz ile görüşebilirsiniz.";
             ViewBag.message = message;
+            return View();
+        }
+        [HttpGet]
+        public IActionResult Claims()
+        {
+            var userClaimList = User.Claims.Select(x => new ClaimViewModel()
+            {
+                Issuer = x.Issuer,
+                Type = x.Type,
+                Value = x.Value
+            }).ToList();
+            return View(userClaimList);
+        }
+
+
+        [Authorize(Policy = "AnkaraPolicy")]
+        public IActionResult AnkaraPage()
+        {
+            return View();
+        }
+
+        [Authorize(Policy = "ExchangePolicy")]
+        public IActionResult ExchangePage()
+        {
             return View();
         }
 

@@ -3,6 +3,9 @@ using AspNetCoreIdentiyApp.Web.Models;
 using AspNetCoreIdentiyApp.Web.CustomValidations;
 using AspNetCoreIdentiyApp.Web.Localizations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using System.Security.Claims;
+using AspNetCoreIdentiyApp.Web.Requirements;
 
 namespace AspNetCoreIdentiyApp.Web.Extensions
 {
@@ -16,7 +19,6 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                 opt.TokenLifespan = TimeSpan.FromHours(2); //Üretilen tokenin süresi
             });
 
-
             //Identiy Kütüphanesi İçin Ekledik...
             services.AddIdentity<AppUser, AppRole>(options =>
             {
@@ -29,7 +31,7 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                 options.Password.RequireUppercase = false; //Büyük karakter zorunlu değil
                 options.Password.RequireDigit = false; //Sayısal karakter de zorunlu değil
 
-                options.Lockout.DefaultLockoutTimeSpan=TimeSpan.FromMinutes(3);//Default 3 dk kitlenmesini sağlıyoruz
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);//Default 3 dk kitlenmesini sağlıyoruz
                 options.Lockout.MaxFailedAccessAttempts = 3;//Kaç hatalı girişte kitlensin
 
             }).AddPasswordValidator<PasswordValidator>()
@@ -64,7 +66,25 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                 opt.SlidingExpiration = true;
             });
 
-         
+
+            //Bu kod, ASP.NET Core uygulamalarında, Authorization (yetkilendirme) işlemleri için kullanılan AddAuthorization metodu aracılığıyla, AnkaraPolicy adında bir politika ekler.
+            //AddPolicy metodu kullanılarak, AnkaraPolicy adlı bir politika tanımlanır.Bu politika, kullanıcının kimlik bilgileri arasında city tipinde bir Claim bulunuyorsa, bu bilginin değerinin "ankara" olması koşulunu sağlar.
+            //Bu politika, belirli bir işlem veya sayfa için yetkilendirme yapılması gerektiğinde kullanılabilir.Örneğin, Ankara şehrindeki kullanıcıların sadece Ankara ile ilgili içeriklere erişim sağlamasını gerektiren bir senaryoda, AnkaraPolicy adlı politika bu işlem için kullanılabilir.
+            //Ayrıca, options nesnesinin bir diğer kullanımı da, farklı politika ve gereksinimler tanımlamak için kullanılan özelleştirilebilir bir yapı sunar. Bu sayede, farklı senaryolara göre özelleştirilmiş yetkilendirme politikaları tanımlanabilir.
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AnkaraPolicy", policy =>
+                {
+                    policy.RequireClaim("city", "ankara");
+                });
+
+                options.AddPolicy("ExchangePolicy", policy =>
+                {
+                    policy.AddRequirements(new ExchangeExpireRequirement());
+                });
+
+            });
+
         }
     }
 }
