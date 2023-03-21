@@ -5,6 +5,8 @@ using System.Security.Claims;
 
 namespace AspNetCoreIdentiyApp.Web.ClaimProvider
 {
+
+    //Cookieden alıp claimlere ekliyor
     //Bu sınıf sadece authrorize attribute olan yerlede çalışır
     public class UserClaimProvider : IClaimsTransformation
     {

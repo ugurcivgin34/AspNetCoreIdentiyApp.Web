@@ -17,7 +17,7 @@ builder.Services.AddControllersWithViews();
 //Sql Baðlantýsý Saðlar...
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlCon"));
+	options.UseSqlServer(builder.Configuration.GetConnectionString("SqlCon"));
 });
 
 //Herhangibir classýn constructorýnda IOptions görürsen appsettings den EmailSettings datalarýný al
@@ -40,7 +40,7 @@ builder.Services.AddIdentityWithExt();
 //Defaultta 30 dakika da bir kullanýcýnýn SecurityStamp tablosundaki deðer bakýlýr. Kullanýcý hem bilgisayardan hem mobilden giriþ yapýp mobilden þifresini deðiþtirmeye kalktýðýnda kullanýcý bilgisayarda oturum bilgisi halen daha açýk olacaktýr.Fakat Security Stamp olayý ile 30 dakikada bir tabloya baktýðý için deðiþiklik farkedilecek ve ootmatikmen kullanýcýyý logout edecektir.Önemli bilgilerinden herhangi bir deðiþiklik olduðunda securityStamp deðeri otomatik deðiþir.Aþaðýda konfigürasyonu da saðlanabilir.
 builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 {
-    options.ValidationInterval = TimeSpan.FromMinutes(30);
+	options.ValidationInterval = TimeSpan.FromMinutes(30);
 });
 
 //Bu kod sayesinde projede herhangi bir sýnýffta IFilePRovider kullanýlýrsa dosya iþlemleri için referans olarak da wwwroot olacak kullanýr,eriþmiþ olur
@@ -55,12 +55,14 @@ builder.Services.AddScoped<IClaimsTransformation, UserClaimProvider>();
 //Bir kullanýcýnýn deðiþim yapabileceði son tarihin geçip geçmediðini kontrol etmek için yetkilendirme gereksinimini temsil eder.Bunun enjekte ettik
 builder.Services.AddScoped<IAuthorizationHandler, ExchangeExpireRequirementHandler>();
 
+builder.Services.AddScoped<IAuthorizationHandler, ViolenceRequirementHandler>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+	app.UseExceptionHandler("/Home/Error");
+	app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -72,11 +74,11 @@ app.UseAuthorization();
 
 //Area ekleyince burayý da eklemek gerekiyor,zate oluþturunca otomatik kendisi bu yapýyý ekle þeklinde sayfa gösteriyor.Biz bunu yeniversiyon göre uyarladý...
 app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+	name: "areas",
+	pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+	name: "default",
+	pattern: "{controller=Home}/{action=SignIn}/{id?}");
 
 app.Run();

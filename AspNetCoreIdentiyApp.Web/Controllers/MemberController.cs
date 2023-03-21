@@ -147,17 +147,17 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
             //username ve emil gibi kritik kısımları güncellendiği için SecurityStamp ı da güncellemek gerekiyor
             await _userManager.UpdateSecurityStampAsync(currentUser);
             await _signInManager.SignOutAsync();
-            await _signInManager.SignInAsync(currentUser, true);
 
-            //if (request.BirthDate.HasValue)
-            //{
-            //    await _signInManager.SignInWithClaimsAsync(currentUser, true, new[] { new Claim("birthdate", currentUser.BirthDate!.Value.ToString()) });
-            //}
+            if (request.BirthDate.HasValue)
+            {
+                //Kullanıcnın doğum tarihi varsa login olduktan sonra claime de ekleyecek oğum tarihi bilgisini
+                await _signInManager.SignInWithClaimsAsync(currentUser, true, new[] { new Claim("birthdate", currentUser.BirthDate!.Value.ToString()) });
+            }
 
-            //else
-            //{
-            //    await _signInManager.SignInAsync(currentUser, true);
-            //}
+            else
+            {
+                await _signInManager.SignInAsync(currentUser, true);
+            }
 
 
             TempData["SuccessMessage"] = "Üye bilgileri başarıyla değiştirilmiştir";
@@ -206,5 +206,12 @@ namespace AspNetCoreIdentiyApp.Web.Controllers
             return View();
         }
 
-    }
+		[Authorize(Policy = "ViolencePolicy")]
+		[HttpGet]
+		public IActionResult ViolencePage()
+		{
+			return View();
+		}
+
+	}
 }

@@ -83,7 +83,14 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
                     policy.AddRequirements(new ExchangeExpireRequirement());
                 });
 
-            });
+				options.AddPolicy("ViolencePolicy", policy =>
+				{
+					policy.AddRequirements(new ViolenceRequirement() { ThresholdAge = 18 });
+
+
+				});
+
+			});
 
         }
     }
