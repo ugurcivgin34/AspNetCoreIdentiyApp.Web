@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication;
 using AspNetCoreIdentiyApp.Web.ClaimProvider;
 using Microsoft.AspNetCore.Authorization;
 using AspNetCoreIdentiyApp.Web.Requirements;
+using AspNetCoreIdentiyApp.Web.Models.Entity;
+using AspNetCoreIdentiyApp.Web.Seeds;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,9 +57,19 @@ builder.Services.AddScoped<IClaimsTransformation, UserClaimProvider>();
 //Bir kullanýcýnýn deðiþim yapabileceði son tarihin geçip geçmediðini kontrol etmek için yetkilendirme gereksinimini temsil eder.Bunun enjekte ettik
 builder.Services.AddScoped<IAuthorizationHandler, ExchangeExpireRequirementHandler>();
 
+//Yaþý 18 den küçük olanlarý sayfaya girmemsini saðlayan yapý
 builder.Services.AddScoped<IAuthorizationHandler, ViolenceRequirementHandler>();
 
 var app = builder.Build();
+
+//BU sayede proe ayaða kalktýðý zaman 1 kere çalýþacak belleðe kaydedecek,proje kapanýnca bellekten silenecek
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
+
+    await PermissionSeed.Seed(roleManager);
+}
+
 
 if (!app.Environment.IsDevelopment())
 {

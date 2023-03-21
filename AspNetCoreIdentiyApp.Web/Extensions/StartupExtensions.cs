@@ -87,11 +87,31 @@ namespace AspNetCoreIdentiyApp.Web.Extensions
 				{
 					policy.AddRequirements(new ViolenceRequirement() { ThresholdAge = 18 });
 
-
 				});
+                options.AddPolicy("OrderPermissionReadAndDelete", policy =>
+                {
+                    policy.RequireClaim("permission", Permissions.Permissions.Order.Read);
+                    policy.RequireClaim("permission", Permissions.Permissions.Order.Delete);
+                    policy.RequireClaim("permission", Permissions.Permissions.Stock.Delete);
 
-			});
+                });
+                options.AddPolicy("Permissions.Order.Read", policy =>
+                {
+                    policy.RequireClaim("permission", Permissions.Permissions.Order.Read);
 
+                });
+
+                options.AddPolicy("Permissions.Order.Delete", policy =>
+                {
+                    policy.RequireClaim("permission", Permissions.Permissions.Order.Delete);
+                });
+
+
+                options.AddPolicy("Permissions.Stock.Delete", policy =>
+                {
+                    policy.RequireClaim("permission", Permissions.Permissions.Stock.Delete);
+                });
+            });
         }
     }
 }
